@@ -1,0 +1,20 @@
+{
+  "name": "lcd-app",
+  "version": "0.1.0",
+  "description": "This app generates hex code library that can be used to display in a LCD screen",
+  "main": "index.js",
+  "scripts": {
+    "start": "electron ."
+  },
+  "keywords": [
+    "lcs",
+    "custom",
+    "character",
+    "embedded"
+  ],
+  "author": "Sahil Khanna",
+  "license": "ISC",
+  "devDependencies": {
+    "electron-prebuilt": "^1.2.3"
+  }
+}
