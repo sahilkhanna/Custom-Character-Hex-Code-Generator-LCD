@@ -25,12 +25,20 @@
     
     </div>
 <script>
-function myFunction( row) {
+	numberOfRows = 8
+	numberOfColumns = 8
+	var pixel=new Array(8)
+for (j=0; j <8; j++)
+    pixel[j]=new Array(8)
+	
+function myFunction( rowNo) {
     var table = document.getElementById("matrix");
-    var row = table.insertRow(row);
-    for ( j = 0; j < 8; j++) { 
-        var cell = row.insertCell(j);
+    var row = table.insertRow(rowNo);
+    for ( columnNo = 0; columnNo < 8; columnNo++) { 
+        var cell = row.insertCell(columnNo);
         cell.className += " load";
+		cell.innerHTML = rowNo+","+columnNo;
+		pixel[rowNo][columnNo]=false;
     }
 }
     
@@ -39,12 +47,21 @@ for ( i = 0; i < 8; i++) {
 }
     
 $("td").mousedown(function(e){ 
-    if($(this).hasClass("selected")){
-         $(this).removeClass("selected");
+	cellArray=$(this).html().split(',');
+	console.log(cellArray);
+	if($(this).hasClass("selected"))
+	{	
+	 	$(this).removeClass("selected");
+		pixel [ parseInt(cellArray[0]) ] [ parseInt(cellArray[1]) ] = false;
     }
     else{
         $(this).addClass("selected");
+		pixel [ parseInt(cellArray[0]) ] [ parseInt(cellArray[1]) ]  = true;
+		//console.log(parseInt(cellArray[1]) + parseInt(cellArray[0]));
     }
+							console.log(pixel);
+	
+
 
 });
     
