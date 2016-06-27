@@ -6,23 +6,26 @@
 </head>
 <body>
 
-<div class="windowHeading" style="opacity:1;">howdy</div>
-    
+<div class="windowHeading" style="opacity:1;" id="debug">howdy</div>
+
 <div class="middleContent">
-    
+
     <div class="leftContent">
-        <table id="matrix">
+		<div id="table">
+        <table id="matrix" >
+          <tbody>
             <tr>
-            
+
             </tr>
-        
+          </tbody>
         </table>
+		</div>
     </div>
-    
+
     <div class="rightContent">
-    
+
     </div>
-    
+
     </div>
 <script>
 	numberOfRows = 8
@@ -30,41 +33,82 @@
 	var pixel=new Array(8)
 for (j=0; j <8; j++)
     pixel[j]=new Array(8)
-	
+
 function myFunction( rowNo) {
     var table = document.getElementById("matrix");
     var row = table.insertRow(rowNo);
-    for ( columnNo = 0; columnNo < 8; columnNo++) { 
+    for ( columnNo = 0; columnNo < 8; columnNo++) {
         var cell = row.insertCell(columnNo);
         cell.className += " load";
-		cell.innerHTML = rowNo+","+columnNo;
+		cellID = rowNo+","+columnNo;
+    $(cell).attr("id",cellID);
 		pixel[rowNo][columnNo]=false;
     }
 }
-    
-for ( i = 0; i < 8; i++) { 
+
+for ( i = 0; i < 8; i++) {
     myFunction(i);
 }
-    
-$("td").mousedown(function(e){ 
-	cellArray=$(this).html().split(',');
-	console.log(cellArray);
-	if($(this).hasClass("selected"))
-	{	
-	 	$(this).removeClass("selected");
-		pixel [ parseInt(cellArray[0]) ] [ parseInt(cellArray[1]) ] = false;
-    }
-    else{
-        $(this).addClass("selected");
-		pixel [ parseInt(cellArray[0]) ] [ parseInt(cellArray[1]) ]  = true;
-		//console.log(parseInt(cellArray[1]) + parseInt(cellArray[0]));
-    }
-							console.log(pixel);
-	
 
 
+
+function PixelSelection(pixelCell){
+  cellArray=pixelCell.attr("id").split(',');
+  //cellArray=cellArray.split(',');
+    pixelCell.toggleClass("selected").promise().done(function(){
+    if(pixelCell.hasClass("selected"))
+   {
+     pixel [ parseInt(cellArray[0]) ] [ parseInt(cellArray[1]) ] = true;
+     }
+     else{
+     pixel [ parseInt(cellArray[0]) ] [ parseInt(cellArray[1]) ]  = false;
+   }
+ });
+}
+
+  $('table').mousedown(
+       function() {
+            $('td').bind('mouseleave', function(){
+             PixelSelection($(this));
+             });
+           }).mouseup(function(){
+             $('td').mouseup(function(){
+              PixelSelection($(this));
+              }).promise().done(function(){
+               $('table td').unbind('mouseleave');
+                  console.log(pixel);
+           });
 });
-    
+
+	/*
+	function selection(){
+		$("td").mouseenter(function(e) {
+		cellArray=$(this).html().split(',');
+		if($(this).hasClass("selected"))
+		{
+			$(this).removeClass("selected");
+			pixel [ parseInt(cellArray[0]) ] [ parseInt(cellArray[1]) ] = false;
+    	}
+    	else{
+        	$(this).addClass("selected");
+			pixel [ parseInt(cellArray[0]) ] [ parseInt(cellArray[1]) ]  = true;
+		}
+
+	} );
+	$("#debug").text('Drag start');
+
+	}
+
+	function dragStart(event) {
+		selection();
+	}
+
+
+	function dragEnd(event){
+		selection().stop();
+		$("#debug").text('Drag end');
+	}
+    */
 </script>
 </body>
 </html>
