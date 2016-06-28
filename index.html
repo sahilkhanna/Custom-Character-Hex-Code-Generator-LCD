@@ -54,7 +54,6 @@ for ( i = 0; i < 8; i++) {
 
 function PixelSelection(pixelCell){
   cellArray=pixelCell.attr("id").split(',');
-  //cellArray=cellArray.split(',');
     pixelCell.toggleClass("selected").promise().done(function(){
     if(pixelCell.hasClass("selected"))
    {
@@ -71,44 +70,13 @@ function PixelSelection(pixelCell){
             $('td').bind('mouseleave', function(){
              PixelSelection($(this));
              });
-           }).mouseup(function(){
-             $('td').mouseup(function(){
-              PixelSelection($(this));
-              }).promise().done(function(){
-               $('table td').unbind('mouseleave');
-                  console.log(pixel);
            });
-});
-
-	/*
-	function selection(){
-		$("td").mouseenter(function(e) {
-		cellArray=$(this).html().split(',');
-		if($(this).hasClass("selected"))
-		{
-			$(this).removeClass("selected");
-			pixel [ parseInt(cellArray[0]) ] [ parseInt(cellArray[1]) ] = false;
-    	}
-    	else{
-        	$(this).addClass("selected");
-			pixel [ parseInt(cellArray[0]) ] [ parseInt(cellArray[1]) ]  = true;
-		}
-
-	} );
-	$("#debug").text('Drag start');
-
-	}
-
-	function dragStart(event) {
-		selection();
-	}
+ $('td').mouseup(function(){
+    $('td').unbind('mouseleave');
+    PixelSelection($(this));
+           });
 
 
-	function dragEnd(event){
-		selection().stop();
-		$("#debug").text('Drag end');
-	}
-    */
 </script>
 </body>
 </html>
