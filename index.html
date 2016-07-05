@@ -5,78 +5,176 @@
 
 </head>
 <body>
+<div class="topSection">
+  <div class="windowHeading" style="opacity:1;" id="debug">8x8 LCD</div>
+  </div>
 
-<div class="windowHeading" style="opacity:1;" id="debug">howdy</div>
+<div class="pageContainer" id="MainContainer">
 
-<div class="middleContent">
+  <div class="Page" id="LCDPage">
 
-    <div class="leftContent">
-		<div id="table">
-        <table id="matrix" >
-          <tbody>
-            <tr>
+    <div class="fullsection">
+        <!-- Middle Section -->
+      <div class="middleContent" id="lcdPixels">
 
-            </tr>
-          </tbody>
-        </table>
-		</div>
+          <div class="leftContent">
+        		<div id="table">
+                <table id="matrix" >
+                  <tbody>
+                    <tr>
+
+                    </tr>
+                  </tbody>
+                </table>
+        		</div>
+            </div>
+
+          <div class="rightContent">
+            <button onclick="generateCode()" class="button" id="generateCode"> Generate Code </button>
+          </div>
+
+          </div>
+        </div>
+
+    <!-- full section Section -->
+    <div class="fullSection" id="ClearSection">
+      <button onclick="ClearAll()" class="button" id="ClearAll"> Clear All</button>
+      </div>
+
     </div>
 
-    <div class="rightContent">
+  <div class="Page" id="CodePage">
+    <div class="fullSection" id="HexCode">
+          <div class="middleContent" id="OutputCode">
+
+            </div>
+
+        </div>
+
+  <div class="fullSection" id="GoBackSctn">
+      <button onclick="goBack()" class="button" id="goBackBtn"> Back </button>
+      <button onclick="copyCode('#OutputCode')" class="button" id="copyCodeBtn"> Copy Code </button>
+  </div>
 
     </div>
+  </div>
 
-    </div>
 <script>
-	numberOfRows = 8
-	numberOfColumns = 8
-	var pixel=new Array(8)
-for (j=0; j <8; j++)
-    pixel[j]=new Array(8)
 
-function myFunction( rowNo) {
+// Variable
+numberOfRows = 8
+numberOfColumns = 8
+
+//---------------------------------
+
+//2D array formation
+var pixel=new Array(numberOfColumns)
+
+for ( j=0; j < numberOfRows; j++)
+    pixel[j]=new Array(numberOfColumns)
+//---------------------------------
+// Matrix generation
+for ( i = 0; i < numberOfRows; i++) {
+    matrixGenerator(i);
+}
+
+function matrixGenerator( rowNo) {
     var table = document.getElementById("matrix");
     var row = table.insertRow(rowNo);
-    for ( columnNo = 0; columnNo < 8; columnNo++) {
+    for ( columnNo = 0; columnNo < numberOfColumns; columnNo++) {
         var cell = row.insertCell(columnNo);
         cell.className += " load";
 		cellID = rowNo+","+columnNo;
     $(cell).attr("id",cellID);
-		pixel[rowNo][columnNo]=false;
+		pixel[rowNo][columnNo]=0;
     }
 }
+//---------------------------------
 
-for ( i = 0; i < 8; i++) {
-    myFunction(i);
+
+//Clearing Function
+function ClearAll(){
+  $('td').removeClass("selected");
+  for (var row = 0; row < numberOfRows; row++) {
+    for (var column = 0; column < numberOfRows; column++) {
+      pixel[row][column] = 0 ;
+    }
+  }
 }
+//---------------------------------
 
-
-
+// Selection Process
 function PixelSelection(pixelCell){
   cellArray=pixelCell.attr("id").split(',');
     pixelCell.toggleClass("selected").promise().done(function(){
     if(pixelCell.hasClass("selected"))
    {
-     pixel [ parseInt(cellArray[0]) ] [ parseInt(cellArray[1]) ] = true;
+     pixel [ parseInt(cellArray[0]) ] [ parseInt(cellArray[1]) ] = 1;
      }
      else{
-     pixel [ parseInt(cellArray[0]) ] [ parseInt(cellArray[1]) ]  = false;
+     pixel [ parseInt(cellArray[0]) ] [ parseInt(cellArray[1]) ]  = 0;
    }
  });
 }
 
-  $('table').mousedown(
+$('table').mousedown(
        function() {
             $('td').bind('mouseleave', function(){
              PixelSelection($(this));
              });
            });
- $('td').mouseup(function(){
+
+$('td').mouseup(function(){
     $('td').unbind('mouseleave');
     PixelSelection($(this));
            });
+$(window).mouseup(function(){
+   $('td').unbind('mouseleave');
+           });
+//---------------------------------
 
+function generateCode(){
+    var outputCode ='write_char( byte text_page , byte text_column) { <br> select_page(text_page); <br> ';
+  $("#MainContainer").animate({left:"-200vw"},2000,'swing');
 
+  var line = new Array(numberOfColumns);
+  for (var count = 0; count < line.length; count++) {
+    var decimalLine = 0;
+    for (var rowCount = 0; rowCount < numberOfRows; rowCount++) {
+    decimalLine = decimalLine + (Math.pow(2,rowCount)*pixel[rowCount][count]);
+    }
+    line[count] = decimalLine.toString(16);
+  }
+for (var count = 0; count < line.length; count++) {
+  outputCode = outputCode+"select_column(text_column - " + count + "  ); <br> " + " LCD_data_tx( " + line[count]+" ); <br> ";
+}
+outputCode=outputCode + " } ";
+  $('#OutputCode').html(outputCode);
+
+}
+
+function copyCode(elementId){
+
+  var code = document.createElement("input");
+  var dummy = ($(elementId).html()).replace(new RegExp("<br>", 'g'),"\r\n");
+  code.setAttribute("value", dummy);
+  //console.log(code);
+  document.body.appendChild(code);
+  code.select();
+  try {
+    var successful = document.execCommand('copy');
+    var msg = successful ? 'successful' : 'unsuccessful';
+    console.log('Copying text command was ' + msg);
+
+  } catch (e) {
+    console.log('Oops, unable to copy');
+  }
+  document.body.removeChild(code);
+}
+
+function goBack(){
+  $("#MainContainer").animate({left:"0px"},2000,'swing');
+}
 </script>
 </body>
 </html>
