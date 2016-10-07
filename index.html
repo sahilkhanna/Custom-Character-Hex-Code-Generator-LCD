@@ -1,15 +1,53 @@
 <html>
 <head>
+<link rel="apple-touch-icon" sizes="57x57" href="./icons/apple-icon-57x57.png">
+<link rel="apple-touch-icon" sizes="60x60" href="./icons/apple-icon-60x60.png">
+<link rel="apple-touch-icon" sizes="72x72" href="./icons/apple-icon-72x72.png">
+<link rel="apple-touch-icon" sizes="76x76" href="./icons/apple-icon-76x76.png">
+<link rel="apple-touch-icon" sizes="114x114" href="./icons/apple-icon-114x114.png">
+<link rel="apple-touch-icon" sizes="120x120" href="./icons/apple-icon-120x120.png">
+<link rel="apple-touch-icon" sizes="144x144" href="./icons/apple-icon-144x144.png">
+<link rel="apple-touch-icon" sizes="152x152" href="./icons/apple-icon-152x152.png">
+<link rel="apple-touch-icon" sizes="180x180" href="./icons/apple-icon-180x180.png">
+<link rel="icon" type="image/png" sizes="192x192"  href="./icons/android-icon-192x192.png">
+<link rel="icon" type="image/png" sizes="32x32" href="./icons/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="96x96" href="./icons/favicon-96x96.png">
+<link rel="icon" type="image/png" sizes="16x16" href="./icons/favicon-16x16.png">
+<link rel="manifest" href="./icons/manifest.json">
+<meta name="msapplication-TileColor" content="#ffffff">
+<meta name="msapplication-TileImage" content="./icons/ms-icon-144x144.png">
+<meta name="theme-color" content="#ffffff">
+
+	<meta content="en-us" http-equiv="Content-Language">
+	<meta charset="utf-8">
+	<meta content="designer, graphic, engineer, programmer, code, engineering, LCD" name="keywords">
+	<meta content="LCD Custom Character HexCode generator" name="description">
+	<meta content="heCo" name="title">
+	<title>LCD Custom Character HexCode generator</title>
+	
+	
     <link rel="stylesheet" href="./css/main.css" />
+	<link rel="stylesheet" href="./css/w3.css">
+	<link rel="stylesheet" href="./css/font-awesome.min.css">
     <script src="./js/jquery.min.js" onload="window.$ = window.jQuery = module.exports;"></script>
 
+	<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-84470727-2', 'auto');
+  ga('send', 'pageview');
+
+</script>
 </head>
 <body>
 <div class="topSection">
   <div class="windowHeading" style="opacity:1;" id="debug">8x8 LCD</div>
   </div>
 
-<div class="pageContainer" id="MainContainer">
+<div class="pageContainer" id="drawPage">
 
   <div class="Page" id="LCDPage">
 
@@ -17,7 +55,7 @@
         <!-- Middle Section -->
       <div class="middleContent" id="lcdPixels">
 
-          <div class="leftContent">
+          
         		<div id="table">
                 <table id="matrix" >
                   <tbody>
@@ -27,11 +65,8 @@
                   </tbody>
                 </table>
         		</div>
-            </div>
-
-          <div class="rightContent">
-            <button onclick="generateCode()" class="button" id="generateCode"> Generate Code </button>
-          </div>
+           
+           
 
           </div>
         </div>
@@ -39,14 +74,20 @@
     <!-- full section Section -->
     <div class="fullSection" id="ClearSection">
       <button onclick="ClearAll()" class="button" id="ClearAll"> Clear All</button>
+	  <button onclick="removeBackground()" class="button" id="removeBackgroundbtn"> Remove Tracing Image</button>
+	  <button onclick="generateCode()" class="button" id="generateCode"> Generate Code </button>
       </div>
 
     </div>
 
+
+  </div>
+  <div class="pageContainer" id="outputPage">
   <div class="Page" id="CodePage">
     <div class="fullSection" id="HexCode">
-          <div class="middleContent" id="OutputCode">
-
+	<div class="windowHeading"> Generated Code	</div>
+          <div class="middleContent">
+			<div id="OutputCode"></div>
             </div>
 
         </div>
@@ -57,38 +98,83 @@
   </div>
 
     </div>
-  </div>
 
-<script>
+	</div>
+	
+<div id="settingIcon">
+	<div class="w3-xlarge" onclick="settings()"><i class="fa fa-gear"></i> </div>
+</div>
+
+<div class="pageContainer" id="settingPage">
+	  
+    <div class="fullSection" id="settingOptions">
+	
+	<div class="windowHeading"> Settings</div>
+          <div></div>
+		  <div class="middleContent">
+			
+			</div>
+
+	<div class="fullSection" id="menuSettings">
+		Character Name: <input id="charname" value="write_char"></input><br>
+		Row size: 8 x <input id="rows" value="1"></input><br>
+		Column Size: <input id ="columns" value="8"></input> <br>
+		Upload Tracing Image(Beta): <input type='file' id="backimage" /><br>
+		Pixel Color: <input type="color" id="pixelColor" value="#ffffff"><br>
+		Found a bug? or have any suggestion? or want to get involved?<br>
+		email - mail@Sahilkhanna.org
+	</div>
+	
+   <div class="fullSection" id="settingsBtns">
+      <button onclick="exitSettings()" class="button" id="exitSettingsbtn"> Back </button>
+	  <button onclick="saveSettings()" class="button" id="saveSettingsbtn"> Save </button>
+  </div>
+</div>
+
+
+
+	<script>
 
 // Variable
-numberOfRows = 8
-numberOfColumns = 8
+var numberOfRows = 8*1
+var numberOfColumns = 8
+var charname="write_char";
+var pixel=new Array(numberOfColumns)
+
+
+generateMatrix(); // first time generation
+
+
 
 //---------------------------------
-
+function generateMatrix(){
+$('#debug').html(numberOfRows+"x"+numberOfColumns);
 //2D array formation
-var pixel=new Array(numberOfColumns)
+pixel=new Array(numberOfColumns)
 
 for ( j=0; j < numberOfRows; j++)
     pixel[j]=new Array(numberOfColumns)
 //---------------------------------
 // Matrix generation
-for ( i = 0; i < numberOfRows; i++) {
-    matrixGenerator(i);
+
+	for ( i = 0; i < numberOfRows; i++) {
+		matrixGenerator(i);
+	}
+
 }
 
 function matrixGenerator( rowNo) {
-    var table = document.getElementById("matrix");
-    var row = table.insertRow(rowNo);
-    for ( columnNo = 0; columnNo < numberOfColumns; columnNo++) {
-        var cell = row.insertCell(columnNo);
-        cell.className += " load";
+	var table = document.getElementById("matrix");
+	var row = table.insertRow(rowNo);
+	for ( columnNo = 0; columnNo < numberOfColumns; columnNo++) {
+		var cell = row.insertCell(columnNo);
+		cell.className += " load";
 		cellID = rowNo+","+columnNo;
-    $(cell).attr("id",cellID);
+	$(cell).attr("id",cellID);
 		pixel[rowNo][columnNo]=0;
-    }
+	}
 }
+
 //---------------------------------
 
 
@@ -105,50 +191,75 @@ function ClearAll(){
 
 // Selection Process
 function PixelSelection(pixelCell){
-  cellArray=pixelCell.attr("id").split(',');
-    pixelCell.toggleClass("selected").promise().done(function(){
-    if(pixelCell.hasClass("selected"))
-   {
-     pixel [ parseInt(cellArray[0]) ] [ parseInt(cellArray[1]) ] = 1;
-     }
-     else{
-     pixel [ parseInt(cellArray[0]) ] [ parseInt(cellArray[1]) ]  = 0;
-   }
- });
-}
 
-$('table').mousedown(
+	
+	  cellArray=pixelCell.attr("id").split(',');
+		pixelCell.toggleClass("selected").promise().done(function(){
+		if(pixelCell.hasClass("selected")){
+		 pixel [ parseInt(cellArray[0]) ] [ parseInt(cellArray[1]) ] = 1;
+		 pixelCell.css('background',pixelColor);
+		 }
+		 else{
+		 pixel [ parseInt(cellArray[0]) ] [ parseInt(cellArray[1]) ]  = 0;
+		 pixelCell.css('background','rgba(255, 255, 255, 0)');
+	   }
+	   });
+ }
+
+
+$('#matrix').mousedown(
        function() {
-            $('td').bind('mouseleave', function(){
+            $('td').bind('mouseenter', function(){
              PixelSelection($(this));
              });
+		   });
+
+	$('body').on('mousedown','td',function(){
+		PixelSelection($(this));
+	});
+
+
+$(window).mouseup(function(){
+   $('td').unbind('mouseenter');
            });
 
-$('td').mouseup(function(){
-    $('td').unbind('mouseleave');
-    PixelSelection($(this));
-           });
-$(window).mouseup(function(){
-   $('td').unbind('mouseleave');
-           });
+
 //---------------------------------
 
 function generateCode(){
-    var outputCode ='write_char( byte text_page , byte text_column) { <br> select_page(text_page); <br> ';
-  $("#MainContainer").animate({left:"-200vw"},2000,'swing');
+    var outputCode = charname + '( byte text_page , byte text_column) { <br> ';
+  $("#outputPage").animate({opacity:"1"},500,'swing');
+  $("#outputPage").css("zIndex",7);
 
   var line = new Array(numberOfColumns);
-  for (var count = 0; count < line.length; count++) {
-    var decimalLine = 0;
-    for (var rowCount = 0; rowCount < numberOfRows; rowCount++) {
-    decimalLine = decimalLine + (Math.pow(2,rowCount)*pixel[rowCount][count]);
-    }
-    line[count] = decimalLine.toString(16);
-  }
-for (var count = 0; count < line.length; count++) {
-  outputCode = outputCode+"select_column(text_column - " + count + "  ); <br> " + " LCD_data_tx( " + line[count]+" ); <br> ";
+  var pageNumber = parseInt(numberOfRows/8);
+  for(var pageCount = 0; pageCount < pageNumber; pageCount++)
+  {
+  outputCode=outputCode+' select_page(text_page + ' + pageCount + '); <br>'
+  
+	for (var count = 0; count < line.length; count++) {
+		var decimalLine = 0;
+		var rowCountNumber = ((pageCount*8)+8);
+		var pagerowcount=0;
+		var rowCount = pageCount*8;
+		for (; rowCount < rowCountNumber ; rowCount++) {
+		
+		decimalLine = decimalLine + (Math.pow(2,pagerowcount)*pixel[rowCount][count]);
+		pagerowcount++;
+		//console.log("decimal")
+		//console.log(decimalLine)
+		}
+		line[count] = decimalLine.toString(16);
+		//console.log("line")
+		//console.log(line[count])
+	  }
+	  
+	for (var count = 0; count < line.length; count++) {
+	  outputCode = outputCode+"select_column(text_column - " + count + "  ); <br> " + " LCD_data_tx( " + line[count]+" ); <br> ";
+	}
 }
-outputCode=outputCode + " } ";
+	outputCode=outputCode + " } ";
+
   $('#OutputCode').html(outputCode);
 
 }
@@ -164,17 +275,96 @@ function copyCode(elementId){
   try {
     var successful = document.execCommand('copy');
     var msg = successful ? 'successful' : 'unsuccessful';
-    console.log('Copying text command was ' + msg);
+    //console.log('Copying text command was ' + msg);
 
   } catch (e) {
-    console.log('Oops, unable to copy');
+    //console.log('Oops, unable to copy');
   }
   document.body.removeChild(code);
 }
 
 function goBack(){
-  $("#MainContainer").animate({left:"0px"},2000,'swing');
+  $("#outputPage").animate({opacity:"0"},500,'swing');
+  $("#outputPage").css("zIndex",5);
 }
+
+function settings(){
+$("#settingPage").animate({opacity:"1"},500,'swing');
+$("#settingPage").css("zIndex",100);
+}
+
+function exitSettings(){
+  $("#settingPage").animate({opacity:"0"},500,'swing');
+  $("#settingPage").css("zIndex",0);
+}
+
+function saveSettings(){
+//---Clear table
+$("#matrix tr").remove();
+//---Generate table
+	numberOfRows = 8*parseInt($("#rows").val());
+	numberOfColumns = parseInt($('#columns').val());
+	charname=$('#charname').val();
+	generateMatrix();
+	exitSettings();
+	changeCellSize();
+	readURL('<input type="file" id="backimage">');
+	goBack();
+}
+
+function readURL(input) {
+
+	
+        if (input.files && input.files[0]) {
+            var reader = new FileReader();
+            
+            reader.onload = function (e) {
+			var url= 'url(' + e.target.result + ')'
+                $('#matrix').css('background-image', url);
+            }
+            
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
+    
+    $("#backimage").change(function(){
+        readURL(this);
+    });
+	
+function removeBackground()
+{
+	$('#matrix').css('background-image', '');
+}
+
+	var pixelColor
+	$("#pixelColor").change(function(){
+	pixelColor=$('#pixelColor').val();
+	$('td.selected').css('background',pixelColor);
+	console.log(pixelColor) 
+	
+	});
+
+changeCellSize();
+
+function changeCellSize(){
+if(numberOfRows/8<4){
+if(((numberOfRows*numberOfColumns)/8)<201){
+	$('td').removeClass('tdsmall');
+	$('td').addClass('tdlarge');
+	}
+	else{
+		$('td').removeClass('tdlarge');
+		$('td').addClass('tdsmall');
+		}
+	}
+else{
+	$('td').removeClass('tdlarge');
+	$('td').addClass('tdsmall');
+	}
+}
+
+
+
 </script>
 </body>
 </html>
