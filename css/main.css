@@ -4,6 +4,14 @@ body{
     background: radial-gradient(circle at 50% 106%,#464646 , #252525);
 		overflow: hidden;
 }
+.footer{
+font-size:12px;
+	margin-left: 25%;
+    width: 50%;
+    text-align: -webkit-center;
+    position: absolute;
+    bottom: 25px;
+}
 
 .windowHeading{
 	font-family: arial;
@@ -52,14 +60,14 @@ td.load{
 }
 .tdlarge{
 	width: 2.2vmin;
-	height: 2.2vmin;	
+	height: 2.2vmin;
 }
 
 .selected{
-    background:rgba(255, 255, 255, 0.7);
+    background:rgba(255, 255, 255, 0.7)!important;
 }
 td:hover{
-    background: rgba(240, 248, 255, 0.41);
+    background: rgba(240, 248, 255, 0.41)!important;
 }
 
 .pageContainer{
@@ -130,6 +138,13 @@ td:hover{
     cursor: pointer;
 }
 
+#SettingIcon:hover{
+    text-shadow: 3px 2px 2px #de6464;
+}
+#SettingIcon:active{
+        text-shadow: 3px 2px 2px #6484de;
+}
+
 #settingPage{
 	top: 0px;
 	z-index: 0;
@@ -138,10 +153,10 @@ td:hover{
 
 #settingOptions{
 	position: absolute;
-	background: radial-gradient(#272727 5%, #1F1F1F 15%, rgba(0, 0, 0, 0.82) 60%);
+	background: radial-gradient(#272727 5%, #1F1F1F 15%, rgba(0, 0, 0, 0.9) 60%);
 	width: 100vw;
 	height: 100vh;
-	padding-top: 15vh;
+	padding-top: 4vh;
 }
 
 #outputPage{
@@ -195,15 +210,17 @@ input{
 	margin: auto;
 }
 
+
+
 ::-webkit-scrollbar {
     width: 5px;
-} 
+}
 ::-webkit-scrollbar-track {
     background-color: rgba(221, 221, 221, 0);
 }
 
 ::-webkit-scrollbar-thumb {
-    background-color: rgba(232, 232, 232, 1); 
+    background-color: rgba(232, 232, 232, 1);
 	border-radius: 2px;
 }
 
@@ -213,7 +230,7 @@ input{
 
 ::-webkit-scrollbar-corner {
     background-color: black;
-} 
+}
 
 .button{
 	border: none;

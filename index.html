@@ -24,8 +24,8 @@
 	<meta content="LCD Custom Character HexCode generator" name="description">
 	<meta content="heCo" name="title">
 	<title>LCD Custom Character HexCode generator</title>
-	
-	
+
+
     <link rel="stylesheet" href="./css/main.css" />
 	<link rel="stylesheet" href="./css/w3.css">
 	<link rel="stylesheet" href="./css/font-awesome.min.css">
@@ -55,7 +55,7 @@
         <!-- Middle Section -->
       <div class="middleContent" id="lcdPixels">
 
-          
+
         		<div id="table">
                 <table id="matrix" >
                   <tbody>
@@ -65,8 +65,8 @@
                   </tbody>
                 </table>
         		</div>
-           
-           
+
+
 
           </div>
         </div>
@@ -100,23 +100,27 @@
     </div>
 
 	</div>
-	
+
 <div id="settingIcon">
-	<div class="w3-xlarge" onclick="settings()"><i class="fa fa-gear"></i> </div>
+	<div class="w3-xlarge" onclick="settings()"><i class="fa fa-gear"></i> Settings </div>
 </div>
 
 <div class="pageContainer" id="settingPage">
-	  
+
     <div class="fullSection" id="settingOptions">
-	
+
 	<div class="windowHeading"> Settings</div>
           <div></div>
 		  <div class="middleContent">
-			
+
 			</div>
 
 	<div class="fullSection" id="menuSettings">
+	Change Syntax<br>
 		Character Name: <input id="charname" value="write_char"></input><br>
+		Replace LCD_data_tx with: <input id="LCD_data_tx" value="LCD_data_tx"></input><br>
+		Add second argument to LCD_data_tx: <input id="AFTER_LCD_data_tx" value=",DATA)"></input><br>
+		Resize<br>
 		Row size: 8 x <input id="rows" value="1"></input><br>
 		Column Size: <input id ="columns" value="8"></input> <br>
 		Upload Tracing Image(Beta): <input type='file' id="backimage" /><br>
@@ -124,14 +128,15 @@
 		Found a bug? or have any suggestion? or want to get involved?<br>
 		email - mail@Sahilkhanna.org
 	</div>
-	
+
    <div class="fullSection" id="settingsBtns">
       <button onclick="exitSettings()" class="button" id="exitSettingsbtn"> Back </button>
 	  <button onclick="saveSettings()" class="button" id="saveSettingsbtn"> Save </button>
   </div>
+
+  <div class="footer">Works best with Google Chrome</div>
 </div>
-
-
+</div>
 
 	<script>
 
@@ -139,6 +144,8 @@
 var numberOfRows = 8*1
 var numberOfColumns = 8
 var charname="write_char";
+var LCD_data_tx = "LCD_data_tx";
+var AFTER_LCD_data_tx =" )";
 var pixel=new Array(numberOfColumns)
 
 
@@ -192,7 +199,7 @@ function ClearAll(){
 // Selection Process
 function PixelSelection(pixelCell){
 
-	
+
 	  cellArray=pixelCell.attr("id").split(',');
 		pixelCell.toggleClass("selected").promise().done(function(){
 		if(pixelCell.hasClass("selected")){
@@ -233,17 +240,19 @@ function generateCode(){
 
   var line = new Array(numberOfColumns);
   var pageNumber = parseInt(numberOfRows/8);
+
+
   for(var pageCount = 0; pageCount < pageNumber; pageCount++)
   {
   outputCode=outputCode+' select_page(text_page + ' + pageCount + '); <br>'
-  
+
 	for (var count = 0; count < line.length; count++) {
 		var decimalLine = 0;
 		var rowCountNumber = ((pageCount*8)+8);
 		var pagerowcount=0;
 		var rowCount = pageCount*8;
 		for (; rowCount < rowCountNumber ; rowCount++) {
-		
+
 		decimalLine = decimalLine + (Math.pow(2,pagerowcount)*pixel[rowCount][count]);
 		pagerowcount++;
 		//console.log("decimal")
@@ -253,9 +262,9 @@ function generateCode(){
 		//console.log("line")
 		//console.log(line[count])
 	  }
-	  
+
 	for (var count = 0; count < line.length; count++) {
-	  outputCode = outputCode+"select_column(text_column - " + count + "  ); <br> " + " LCD_data_tx( " + line[count]+" ); <br> ";
+	  outputCode = outputCode+"select_column(text_column - " + count + "  ); <br> " + LCD_data_tx + "( 0x" + line[count].toUpperCase()+AFTER_LCD_data_tx+" ; <br> ";
 	}
 }
 	outputCode=outputCode + " } ";
@@ -305,6 +314,8 @@ $("#matrix tr").remove();
 	numberOfRows = 8*parseInt($("#rows").val());
 	numberOfColumns = parseInt($('#columns').val());
 	charname=$('#charname').val();
+	LCD_data_tx=$('#LCD_data_tx').val();
+	AFTER_LCD_data_tx=$('#AFTER_LCD_data_tx').val();
 	generateMatrix();
 	exitSettings();
 	changeCellSize();
@@ -314,23 +325,23 @@ $("#matrix tr").remove();
 
 function readURL(input) {
 
-	
+
         if (input.files && input.files[0]) {
             var reader = new FileReader();
-            
+
             reader.onload = function (e) {
 			var url= 'url(' + e.target.result + ')'
                 $('#matrix').css('background-image', url);
             }
-            
+
             reader.readAsDataURL(input.files[0]);
         }
     }
-    
+
     $("#backimage").change(function(){
         readURL(this);
     });
-	
+
 function removeBackground()
 {
 	$('#matrix').css('background-image', '');
@@ -340,8 +351,8 @@ function removeBackground()
 	$("#pixelColor").change(function(){
 	pixelColor=$('#pixelColor').val();
 	$('td.selected').css('background',pixelColor);
-	console.log(pixelColor) 
-	
+	//console.log(pixelColor)
+
 	});
 
 changeCellSize();
@@ -366,5 +377,6 @@ else{
 
 
 </script>
+ <div class="footer">heCo - V0.3.2<br>Remember you can resize or change the syntax under settings</div>
 </body>
 </html>
