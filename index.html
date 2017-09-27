@@ -29,7 +29,7 @@
     <link rel="stylesheet" href="./css/main.css" />
 	<link rel="stylesheet" href="./css/w3.css">
 	<link rel="stylesheet" href="./css/font-awesome.min.css">
-    <script src="./js/jquery.min.js" onload="window.$ = window.jQuery = module.exports;"></script>
+    <script src="./js/jquery.min.js"></script>
 
 	<script>
   (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
@@ -76,6 +76,7 @@
       <button onclick="ClearAll()" class="button" id="ClearAll"> Clear All</button>
 	  <button onclick="removeBackground()" class="button" id="removeBackgroundbtn"> Remove Tracing Image</button>
 	  <button onclick="generateCode()" class="button" id="generateCode"> Generate Code </button>
+		<br>
       </div>
 
     </div>
@@ -102,9 +103,16 @@
 	</div>
 
 <div id="settingIcon">
-	<div class="w3-xlarge" onclick="settings()"><i class="fa fa-gear"></i> Settings </div>
-</div>
+	<div class="w3-xlarge menu-category" onclick="settings()"><i class="fa fa-gear"></i> Settings </div>
 
+<div id="File" class="dropdown " style="z-index:1000;">
+<div onclick="filemenu()" class="dropbtn w3-xlarge menu-category filemenu"><i class="fa fa-file-o filemenu"></i> File</div>
+  <div id="myDropdown" class="dropdown-content">
+    <a onclick="saveDesign()" href="#">Save</a>
+	<a href='#' id="uploadbtn">Upload</a><input type='file' id="uploaddesign" href="#">
+  </div>
+</div>
+</div>
 <div class="pageContainer" id="settingPage">
 
     <div class="fullSection" id="settingOptions">
@@ -135,6 +143,7 @@
   </div>
 
   <div class="footer">Works best with Google Chrome</div>
+  <a id="downloadAnchorElem" style="display:none"></a>
 </div>
 </div>
 
@@ -151,8 +160,62 @@ var pixel=new Array(numberOfColumns)
 
 generateMatrix(); // first time generation
 
+function saveDesign(){
+	var design=new Object();
+	design.rows=numberOfRows;
+	design.columns=numberOfColumns;
+	design.pixel=pixel;
+	outputfile=JSON.stringify(design);
+	//console.log(outputfile);
+	var dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(design));
+	var dlAnchorElem = document.getElementById('downloadAnchorElem');
+	dlAnchorElem.setAttribute("href",     dataStr     );
+	dlAnchorElem.setAttribute("download", "design.json");
+	dlAnchorElem.click();
+}
+var loadedDesign = ""
+function loadDesign(){
+	//var newDesign = JSON.parse(loadedDesign);
+	numberOfRows=loadedDesign.rows;
+	numberOfColumns=loadedDesign.columns;
+	$("#matrix tr").remove();
+	generateMatrix();
+	changeCellSize();
+	for ( j=0; j < numberOfRows; j++)
+	{
+		for ( i=0; i < numberOfColumns; i++)
+		{
+		if(loadedDesign.pixel [ j ] [ i ] == 1)
+		{
+			id="td#"+j+"\\,"+i;
+			//console.log(id);
+			$(id).css('background',pixelColor);
+			$(id).addClass('selected');
+		}
+		}
+	}
+	pixel=loadedDesign.pixel;
+}
 
+function uploadNewdesign(input) {
+        if (input.files && input.files[0]) {
+            var reader = new FileReader();
 
+            reader.onload = function (e) {
+			loadedDesign = JSON.parse(e.target.result)
+			loadDesign();
+            }
+
+            reader.readAsText(input.files[0]);
+        }
+    }
+	
+$(function(){
+    $("#uploadbtn").on('click', function(e){
+        e.preventDefault();
+        $("#uploaddesign:hidden").trigger('click');
+    });
+});
 //---------------------------------
 function generateMatrix(){
 $('#debug').html(numberOfRows+"x"+numberOfColumns);
@@ -199,7 +262,7 @@ function ClearAll(){
 // Selection Process
 function PixelSelection(pixelCell){
 
-
+	console.log(pixelCell);
 	  cellArray=pixelCell.attr("id").split(',');
 		pixelCell.toggleClass("selected").promise().done(function(){
 		if(pixelCell.hasClass("selected")){
@@ -342,6 +405,9 @@ function readURL(input) {
         readURL(this);
     });
 
+	$("#uploaddesign").change(function(){
+        uploadNewdesign(this);
+    });
 function removeBackground()
 {
 	$('#matrix').css('background-image', '');
@@ -375,8 +441,25 @@ else{
 }
 
 
+function filemenu() {
+    $("#myDropdown").toggleClass("show");
+}
+
+// Close the dropdown if the user clicks outside of it
+window.onclick = function(event) {
+  if (!(event.target.className).includes('filemenu')) {
+    var dropdowns = document.getElementsByClassName("dropdown-content");
+    var i;
+    for (i = 0; i < dropdowns.length; i++) {
+      var openDropdown = dropdowns[i];
+      if (openDropdown.classList.contains('show')) {
+        openDropdown.classList.remove('show');
+      }
+    }
+  }
+}
 
 </script>
- <div class="footer">heCo - V0.3.2<br>Remember you can resize or change the syntax under settings</div>
+ <div class="footer">heCo - V0.3.3<br>Remember you can resize or change the syntax under settings</div>
 </body>
 </html>
